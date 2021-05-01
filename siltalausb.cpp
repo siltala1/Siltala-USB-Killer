@@ -1,8 +1,9 @@
 #include <iostream>
 #include <fstream>
-#include <unistd.h>
+#include <unistd.h> //sleep
 #include <vector>
 #include <memory>
+#include <cstring> //strcmp
 
 using namespace std;
 
@@ -20,15 +21,50 @@ string getUsbDevices()
     return result;
 }
 
+int createWhiteList()
+{
+	cout << "Whitelisting current devices\n";
+	string result = getUsbDevices();
+	ofstream configfile("config");
+
+	if(!configfile.is_open()) {
+		cout << "Config file not found\n";
+		return 1;
+	}
+
+        int i = 0;
+        while(i != string::npos)
+	{
+        	i = result.find("ID ", i+1);
+
+        	if(i != string::npos)
+       		{
+        		string device = result.substr(i+3,9);
+
+			configfile << device << endl;
+        	}
+        }
+
+	return 0;
+}
+
+		
 void Shutdown()
 {
 	cout << "Unauthorized USB device found" << endl;
 	system("poweroff -ff");
 }
 
-int main()
+int main(int argc, char *argv[])
 {
 	cout << "Siltala USB Killer\n";
+
+	if(argc > 1) {
+		cout << argv[0] << argv[1] << endl;
+		if(strcmp(argv[1],"whitelist") == 0 ) {
+			createWhiteList();
+		}
+	}
 
 	ifstream configfile("config");
 
