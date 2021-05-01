@@ -25,7 +25,8 @@ int createWhiteList()
 {
 	cout << "Whitelisting current devices\n";
 	string result = getUsbDevices();
-	ofstream configfile("config");
+	ofstream configfile;
+	configfile.open("config", ofstream::app);
 
 	if(!configfile.is_open()) {
 		cout << "Config file not found\n";
@@ -44,6 +45,8 @@ int createWhiteList()
 			configfile << device << endl;
         	}
         }
+
+	configfile.close();
 
 	return 0;
 }
@@ -87,6 +90,8 @@ int main(int argc, char *argv[])
 		cout << line << endl;
 		whitelist.push_back(line);
 	}
+
+	configfile.close();
 	
 	while(true)
 	{
